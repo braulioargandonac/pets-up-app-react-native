@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function AdoptScreen() {
+export default function VetScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pantalla de Adopción (Tinder)</Text>
+      <Text style={styles.title}>Pantalla de Veterinarias</Text>
     </View>
   );
 }
