@@ -1,4 +1,3 @@
-// components/PetDeck/PetDeck.styles.ts
 import { StyleSheet, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -12,7 +11,7 @@ export const styles = StyleSheet.create({
   },
   cardContainer: {
     position: 'absolute',
-    width: width,
-    height: height * 0.7,
+    width: width*0.9,
+    height: height * 0.75,
   },
 });

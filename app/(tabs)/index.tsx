@@ -1,13 +1,29 @@
-// app/(tabs)/index.tsx
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { usePets } from '@/hooks/usePets';
 import Colors from '@/constants/Colors';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { PetDeck } from '@/components/PetDeck/PetDeck';
 
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { PetDetailSheet } from '@/components/PetDetail/PetDetailSheet';
+
 export default function AdoptScreen() {
   const { pets, isLoading, error, loadMore } = usePets();
   const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+  const [selectedPetId, setSelectedPetId] = useState<number | null>(null);
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+  const handleShowPetDetails = (id: number) => {
+    setSelectedPetId(id);
+    bottomSheetRef.current?.present();
+  };
+
+  const handleClosePetDetails = () => {
+    setSelectedPetId(null);
+    bottomSheetRef.current?.dismiss();
+  };
 
   if (isLoading && pets.length === 0) {
     return (
@@ -24,19 +40,28 @@ export default function AdoptScreen() {
       </View>
     );
   }
-  
+
   return (
     <View style={[styles.container, { backgroundColor }]}>
       {pets.length > 0 ? (
-        <PetDeck 
-          pets={pets} 
+        <PetDeck
+          pets={pets}
           onSwipeOff={loadMore}
+          onShowDetails={handleShowPetDetails}
         />
       ) : (
         <View style={styles.centered}>
-          <Text style={styles.title}>No hay más mascotas por ahora.</Text>
+          <Text style={[styles.title, { color: textColor }]}>
+            No hay más mascotas por ahora.
+          </Text>
         </View>
       )}
+
+      <PetDetailSheet
+        petId={selectedPetId}
+        bottomSheetRef={bottomSheetRef}
+        onClose={handleClosePetDetails}
+      />
     </View>
   );
 }
@@ -53,7 +78,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.light.textSecondary,
   },
   errorText: {
     color: Colors.functional.danger,

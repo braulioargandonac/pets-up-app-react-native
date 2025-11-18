@@ -6,8 +6,9 @@ const { width, height } = Dimensions.get('window');
 export const styles = StyleSheet.create({
 
   card: {
-    width: width,
-    height: height*0.7,
+    marginTop: 20,
+    width: width*0.9,
+    height: height*0.75,
     borderRadius: 20,
     overflow: 'hidden',
     backgroundColor: Colors.light.backgroundMuted,

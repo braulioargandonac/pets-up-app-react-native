@@ -1,14 +1,12 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import 'react-native-reanimated';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
 import { useColorScheme } from '@/hooks/useColorScheme';
 import Colors from '@/constants/Colors';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { useEffect } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -42,11 +40,13 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
-        <ThemeProvider
-          value={colorScheme === 'dark' ? CustomDarkTheme : CustomDefaultTheme}>
-          <ProtectedRootNav />
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        </ThemeProvider>
+        <BottomSheetModalProvider>
+          <ThemeProvider
+            value={colorScheme === 'dark' ? CustomDarkTheme : CustomDefaultTheme}>
+            <ProtectedRootNav />
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+          </ThemeProvider>
+        </BottomSheetModalProvider>
       </AuthProvider>
     </GestureHandlerRootView>
   );
@@ -54,6 +54,7 @@ export default function RootLayout() {
 
 function ProtectedRootNav() {
   const { isAuthenticated, isLoading } = useAuth();
+
   const router = useRouter();
   const segments = useSegments();
 

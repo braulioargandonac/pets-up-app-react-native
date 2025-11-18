@@ -53,6 +53,9 @@ export interface PetDetail {
   specieId: number | null;
   breedId: number | null;
   hairTypeId: number | null;
+  isSterilized: boolean;
+  isKidFriendly: boolean;
+  isPetFriendly: boolean;
 
   images: PetImage[];
   owner: Partial<User> | null;

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -9,6 +8,7 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
+import { View, TouchableOpacity } from 'react-native'; 
 
 import { PetSummary } from '@/types/pet.types';
 import { PetCard } from '@/components/PetCard/PetCard';
@@ -18,6 +18,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 interface PetDeckProps {
   pets: PetSummary[];
   onSwipeOff: () => void;
+  onShowDetails: (id: number) => void;
 }
 
 const SWIPE_THRESHOLD = 120;
@@ -27,7 +28,7 @@ const timingConfig = {
   easing: Easing.out(Easing.ease),
 };
 
-export function PetDeck({ pets, onSwipeOff }: PetDeckProps) {
+export function PetDeck({ pets, onSwipeOff, onShowDetails }: PetDeckProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const translateX = useSharedValue(0);
@@ -86,7 +87,12 @@ export function PetDeck({ pets, onSwipeOff }: PetDeckProps) {
             return (
               <GestureDetector gesture={panGesture} key={pet.id}>
                 <Animated.View style={[styles.cardContainer, animatedStyle]}>
-                  <PetCard pet={pet} />
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={() => onShowDetails(pet.id)}
+                  >
+                    <PetCard pet={pet} />
+                  </TouchableOpacity>
                 </Animated.View>
               </GestureDetector>
             );
