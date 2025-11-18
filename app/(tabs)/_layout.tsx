@@ -2,8 +2,8 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
-import Colors from '../../constants/Colors';
-import { styles } from '../../components/navigation/Tabs.styles';
+import Colors from '@/constants/Colors';
+import { styles } from '@/components/navigation/Tabs.styles';
 
 function TabBarItem(props: {
   name: React.ComponentProps<typeof FontAwesome5>['name'];
@@ -48,7 +48,6 @@ export default function TabLayout() {
         headerShown: false,
       }}>
       
-      {/* Pestaña 1: Perdidos */}
       <Tabs.Screen
         name="lost"
         options={{
@@ -63,7 +62,6 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Pestaña 2: Veterinarias */}
       <Tabs.Screen
         name="vets"
         options={{
@@ -78,7 +76,6 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Pestaña 3: Adoptar */}
       <Tabs.Screen
         name="index"
         options={{
@@ -93,7 +90,6 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Pestaña 4: Comunitarios */}
       <Tabs.Screen
         name="community"
         options={{
@@ -109,7 +105,6 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Pestaña 5: Escanear */}
       <Tabs.Screen
         name="scan"
         options={{
