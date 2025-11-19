@@ -81,6 +81,7 @@ export const styles = StyleSheet.create({
   charValue: {
     fontSize: 16,
     fontWeight: '600',
+    textTransform: 'capitalize',
   },
 
   bubblesContainer: {

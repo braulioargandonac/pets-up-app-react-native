@@ -5,12 +5,15 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { styles } from './PetCard.styles';
 import { PetSummary } from '@/types/pet.types';
 import Colors from '@/constants/Colors';
+import { useCatalog } from '@/context/CatalogContext';
 
 interface PetCardProps {
   pet: PetSummary;
 }
 
 export function PetCard({ pet }: PetCardProps) {
+  const { getCommuneName } = useCatalog();
+  const petCommune = getCommuneName(pet.communeId);
   const imageUrl =
     pet.images && pet.images.length > 0
       ? pet.images[0].imageUrl
@@ -30,10 +33,10 @@ export function PetCard({ pet }: PetCardProps) {
         <View style={styles.infoContainer}>
           <View style={styles.textContainer}>
             <Text style={styles.name}>{pet.name}</Text>
-            <Text style={styles.location}>
-              <Ionicons name="location-sharp" size={18} />
-              {pet.commune?.name || 'Ubicación desconocida'}
-            </Text>
+            <View style={styles.location}>
+              <Ionicons style={styles.locationIcon} name="location-sharp" size={18} />
+              <Text style={styles.locationText}>{petCommune || 'Ubicación desconocida'}</Text>
+            </View>
           </View>
           
           <TouchableOpacity style={styles.likeButton}>

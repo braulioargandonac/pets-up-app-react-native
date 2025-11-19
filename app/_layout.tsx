@@ -1,6 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '../context/AuthContext';
+import { CatalogProvider } from '../context/CatalogContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import Colors from '@/constants/Colors';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -40,13 +41,15 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
-        <BottomSheetModalProvider>
-          <ThemeProvider
-            value={colorScheme === 'dark' ? CustomDarkTheme : CustomDefaultTheme}>
-            <ProtectedRootNav />
-            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-          </ThemeProvider>
-        </BottomSheetModalProvider>
+        <CatalogProvider>
+          <BottomSheetModalProvider>
+            <ThemeProvider
+              value={colorScheme === 'dark' ? CustomDarkTheme : CustomDefaultTheme}>
+              <ProtectedRootNav />
+              <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+            </ThemeProvider>
+          </BottomSheetModalProvider>
+        </CatalogProvider>
       </AuthProvider>
     </GestureHandlerRootView>
   );

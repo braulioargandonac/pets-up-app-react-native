@@ -6,6 +6,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import { usePetDetail } from '@/hooks/usePetDetail';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useCatalog } from '@/context/CatalogContext';
 import { styles } from './PetDetail.styles';
 import Colors from '@/constants/Colors';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
@@ -44,6 +45,14 @@ export function PetDetailSheet({
   onClose,
 }: PetDetailSheetProps) {
   const { pet, isLoading, error, fetchPetDetail, clearPetDetail } = usePetDetail();
+  const { 
+    getCommuneName, 
+    getBreedName, 
+    getSizeName, 
+    getHomeTypeName, 
+    getEnergyLevelName,
+    getHairTypeName,
+  } = useCatalog();
   const snapPoints = useMemo(() => ['75%', '90%'], []);
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
@@ -75,14 +84,14 @@ export function PetDetailSheet({
       );
     }
 
+    const petCommune = getCommuneName(pet.communeId);
+    const petBreed = getBreedName(pet.breedId);
+    const petSize = getSizeName(pet.sizeId);
+    const petHome = getHomeTypeName(pet.homeTypeId);
+    const petEnergy = getEnergyLevelName(pet.homeTypeId);
+    const petHairType = getHairTypeName(pet.hairTypeId);
+
     const petAge = pet.birthDate ? `${new Date().getFullYear() - new Date(pet.birthDate).getFullYear()} años` : 'N/A';
-    const petSize = pet.sizeId ? `ID: ${pet.sizeId}` : 'N/A';
-    const petBreed = pet.breedId ? `ID: ${pet.breedId}` : 'N/A';
-    const petHome = pet.homeTypeId ? `ID: ${pet.homeTypeId}` : 'N/A';
-    const petSterilized = pet.isSterilized ? 'Sí' : 'No';
-    const petKidFriendly = pet.isKidFriendly ? 'Sí' : 'No';
-    const petPetFriendly = pet.isPetFriendly ? 'Sí' : 'No';
-    const petEnergy = pet.energyLevelId ? `ID: ${pet.energyLevelId}` : 'N/A';
 
     return (
       <BottomSheetScrollView contentContainerStyle={styles.scrollContainer}>
@@ -95,7 +104,7 @@ export function PetDetailSheet({
           <View>
             <Text style={[styles.name, { color: textColor }]}>{pet.name}</Text>
             <Text style={[styles.location, { color: textSecondaryColor }]}>
-              <Ionicons name="location-sharp" color={Colors.primary} size={16} /> {pet.commune?.name || 'Ubicación desconocida'}
+              <Ionicons name="location-sharp" color={Colors.primary} size={16} /> {petCommune || 'Ubicación desconocida'}
             </Text>
           </View>
           <TouchableOpacity style={styles.likeButton}>
@@ -123,21 +132,22 @@ export function PetDetailSheet({
 
         <View style={styles.section}>
           <View style={styles.bubblesContainer}>
-            <AttributeBubble icon="child" text={petKidFriendly ? 'Amigable con niños' : 'No amigable con niños'} />
-            <AttributeBubble icon="dog" text={petPetFriendly ? 'Amigable con mascotas' : 'No amigable con mascotas'} />
-            <AttributeBubble icon="cut" text={petSterilized ? 'Esterilizado' : 'No esterilizado'} />
+            <AttributeBubble icon="child" text={pet.isKidFriendly ? 'Amigable con niños' : 'No amigable con niños'} />
+            <AttributeBubble icon="dog" text={pet.isPetFriendly ? 'Amigable con mascotas' : 'No amigable con mascotas'} />
+            <AttributeBubble icon="notes-medical" text={pet.isSterilized ? 'Esterilizado' : 'No esterilizado'} />
             <AttributeBubble icon="bolt" text={`${petEnergy}`} />
           </View>
         </View>
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textColor }]}>Características</Text>
-          <View style={styles.charGrid}>
+          <View>
             <CharacteristicRow label="Edad (aprox)" value={petAge} />
             <CharacteristicRow label="Tamaño" value={petSize} />
             <CharacteristicRow label="Raza" value={petBreed} />
             <CharacteristicRow label="Hogar sugerido" value={petHome} />
-            <CharacteristicRow label="Género" value={pet.gender || 'N/A'} />
+            <CharacteristicRow label="Sexo" value={pet.gender || 'N/A'} />
+            <CharacteristicRow label="Pelaje" value={petHairType} />
             <CharacteristicRow label="Color" value={pet.color || 'N/A'} />
           </View>
         </View>

@@ -44,11 +44,18 @@ export const styles = StyleSheet.create({
     color: Colors.white,
   },
   location: {
-    fontSize: 16,
-    color: Colors.white,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     marginTop: 4,
   },
-
+  locationText: {
+    fontSize: 16,
+    color: Colors.white,
+  },
+  locationIcon: {
+    color: Colors.primary,
+  },
   likeButton: {
     width: 60,
     height: 60,
