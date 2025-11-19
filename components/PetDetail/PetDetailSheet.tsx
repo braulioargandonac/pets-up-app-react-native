@@ -1,5 +1,14 @@
-import React, { useEffect, useMemo } from 'react';
-import { View, Text, ActivityIndicator, Image, FlatList, TouchableOpacity } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  Image,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  Dimensions
+} from 'react-native';
 import {
   BottomSheetModal,
   BottomSheetScrollView,
@@ -16,6 +25,8 @@ interface PetDetailSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
   onClose: () => void;
 }
+
+const { width } = Dimensions.get('window');
 
 const AttributeBubble = ({ icon, text }: { icon: string; text: string }) => {
   return (
@@ -45,11 +56,11 @@ export function PetDetailSheet({
   onClose,
 }: PetDetailSheetProps) {
   const { pet, isLoading, error, fetchPetDetail, clearPetDetail } = usePetDetail();
-  const { 
-    getCommuneName, 
-    getBreedName, 
-    getSizeName, 
-    getHomeTypeName, 
+  const {
+    getCommuneName,
+    getBreedName,
+    getSizeName,
+    getHomeTypeName,
     getEnergyLevelName,
     getHairTypeName,
   } = useCatalog();
@@ -60,6 +71,9 @@ export function PetDetailSheet({
   const mutedBackgroundColor = useThemeColor({}, 'backgroundMuted');
   const borderColor = useThemeColor({}, 'border');
 
+  const [isViewerVisible, setViewerVisible] = useState(false);
+  const [initialViewerIndex, setInitialViewerIndex] = useState(0);
+
   useEffect(() => {
     if (petId) {
       fetchPetDetail(petId);
@@ -67,6 +81,11 @@ export function PetDetailSheet({
       clearPetDetail();
     }
   }, [petId, fetchPetDetail, clearPetDetail]);
+
+  const openImageViewer = (index: number) => {
+    setInitialViewerIndex(index);
+    setViewerVisible(true);
+  };
 
   const renderContent = () => {
     if (isLoading) {
@@ -95,11 +114,16 @@ export function PetDetailSheet({
 
     return (
       <BottomSheetScrollView contentContainerStyle={styles.scrollContainer}>
-        <Image
-          source={{ uri: pet.images[0]?.imageUrl }}
-          style={styles.headerImage}
-        />
-        
+        <TouchableOpacity 
+          activeOpacity={0.9} 
+          onPress={() => openImageViewer(0)}
+        >
+          <Image
+            source={{ uri: pet.images[0]?.imageUrl }}
+            style={styles.headerImage}
+          />
+        </TouchableOpacity>
+
         <View style={[styles.infoBox, { backgroundColor: backgroundColor }]}>
           <View>
             <Text style={[styles.name, { color: textColor }]}>{pet.name}</Text>
@@ -124,8 +148,10 @@ export function PetDetailSheet({
             showsHorizontalScrollIndicator={false}
             data={pet.images}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <Image source={{ uri: item.imageUrl }} style={styles.carouselImage} />
+            renderItem={({ item, index }) => (
+              <TouchableOpacity onPress={() => openImageViewer(index)}>
+                <Image source={{ uri: item.imageUrl }} style={styles.carouselImage} />
+              </TouchableOpacity>
             )}
           />
         </View>
@@ -156,9 +182,9 @@ export function PetDetailSheet({
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: textColor }]}>Rescatista</Text>
             <View style={[styles.ownerBox, { backgroundColor: mutedBackgroundColor }]}>
-              <Image 
+              <Image
                 source={{ uri: 'https://via.placeholder.com/150' }}
-                style={styles.ownerAvatar} 
+                style={styles.ownerAvatar}
               />
               <View>
                 <Text style={[styles.ownerName, { color: textColor }]}>{pet.owner.name}</Text>
@@ -180,6 +206,7 @@ export function PetDetailSheet({
   };
 
   return (
+    <>
     <BottomSheetModal
       ref={bottomSheetRef}
       index={0}
@@ -190,5 +217,45 @@ export function PetDetailSheet({
     >
       {renderContent()}
     </BottomSheetModal>
+
+    {pet && (
+        <Modal
+          visible={isViewerVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setViewerVisible(false)}
+        >
+          <View style={styles.viewerModalContainer}>
+            <TouchableOpacity 
+              style={styles.viewerCloseButton} 
+              onPress={() => setViewerVisible(false)}
+            >
+              <Ionicons name="close" size={28} color="white" />
+            </TouchableOpacity>
+
+            <FlatList
+              data={pet.images}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.id.toString()}
+              initialScrollIndex={initialViewerIndex} 
+              getItemLayout={(data, index) => (
+                { length: width, offset: width * index, index }
+              )}
+              
+              renderItem={({ item }) => (
+                <View style={styles.viewerImageContainer}>
+                  <Image 
+                    source={{ uri: item.imageUrl }} 
+                    style={styles.viewerImage} 
+                  />
+                </View>
+              )}
+            />
+          </View>
+        </Modal>
+      )}
+    </>
   );
 }

@@ -1,5 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import Colors from '@/constants/Colors';
+
+const { width, height } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   loadingContainer: {
@@ -7,7 +9,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   scrollContainer: {
     paddingBottom: 100,
   },
@@ -145,5 +146,32 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginLeft: 10,
+  },
+
+  viewerModalContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  viewerCloseButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 10,
+    padding: 10,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 20,
+  },
+  viewerImageContainer: {
+    width: width,
+    height: height,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  viewerImage: {
+    width: '100%',
+    height: '80%',
+    resizeMode: 'contain',
   },
 });
