@@ -1,24 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  Image,
-  FlatList,
-  TouchableOpacity,
-  Modal,
-  Dimensions
-} from 'react-native';
 import {
   BottomSheetModal,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
+import React, { useEffect, useMemo } from 'react';
+import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
+
+import { useCatalog } from '@/context/CatalogContext';
+import { useImageViewer } from '@/hooks/useImageViewer';
 import { usePetDetail } from '@/hooks/usePetDetail';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { useCatalog } from '@/context/CatalogContext';
-import { styles } from './PetDetail.styles';
-import Colors from '@/constants/Colors';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+
+import Colors from '@/constants/Colors';
+import { styles } from './PetDetail.styles';
+
+import { AttributeBubble, CharacteristicRow } from './ui/PetAttributes';
+import { PetImageCarousel } from './ui/PetImageCarousel';
+import { PetImageViewer } from './ui/PetImageViewer';
 
 interface PetDetailSheetProps {
   petId: number | null;
@@ -26,36 +24,14 @@ interface PetDetailSheetProps {
   onClose: () => void;
 }
 
-const { width } = Dimensions.get('window');
-
-const AttributeBubble = ({ icon, text }: { icon: string; text: string }) => {
-  return (
-    <View style={styles.bubble}>
-      <FontAwesome5 name={icon as any} size={24} color={Colors.white} />
-      <Text numberOfLines={2} style={styles.bubbleText}>{text}</Text>
-    </View>
-  );
-};
-
-const CharacteristicRow = ({ label, value }: { label: string; value: string }) => {
-  const textColor = useThemeColor({}, 'text');
-  const textSecondaryColor = useThemeColor({}, 'textSecondary');
-  const borderColor = useThemeColor({}, 'border');
-
-  return (
-    <View style={[styles.charRow, { borderBottomColor: borderColor }]}>
-      <Text style={[styles.charLabel, { color: textSecondaryColor }]}>{label}</Text>
-      <Text style={[styles.charValue, { color: textColor }]}>{value}</Text>
-    </View>
-  );
-};
-
 export function PetDetailSheet({
   petId,
   bottomSheetRef,
   onClose,
 }: PetDetailSheetProps) {
   const { pet, isLoading, error, fetchPetDetail, clearPetDetail } = usePetDetail();
+  const { isViewerVisible, initialIndex, openViewer, closeViewer } = useImageViewer();
+  
   const {
     getCommuneName,
     getBreedName,
@@ -63,16 +39,16 @@ export function PetDetailSheet({
     getHomeTypeName,
     getEnergyLevelName,
     getHairTypeName,
+    getSpecieName,
   } = useCatalog();
+
   const snapPoints = useMemo(() => ['75%', '90%'], []);
+
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const textSecondaryColor = useThemeColor({}, 'textSecondary');
   const mutedBackgroundColor = useThemeColor({}, 'backgroundMuted');
   const borderColor = useThemeColor({}, 'border');
-
-  const [isViewerVisible, setViewerVisible] = useState(false);
-  const [initialViewerIndex, setInitialViewerIndex] = useState(0);
 
   useEffect(() => {
     if (petId) {
@@ -82,11 +58,6 @@ export function PetDetailSheet({
     }
   }, [petId, fetchPetDetail, clearPetDetail]);
 
-  const openImageViewer = (index: number) => {
-    setInitialViewerIndex(index);
-    setViewerVisible(true);
-  };
-
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -95,6 +66,7 @@ export function PetDetailSheet({
         </View>
       );
     }
+
     if (error || !pet) {
       return (
         <View style={styles.loadingContainer}>
@@ -107,28 +79,28 @@ export function PetDetailSheet({
     const petBreed = getBreedName(pet.breedId);
     const petSize = getSizeName(pet.sizeId);
     const petHome = getHomeTypeName(pet.homeTypeId);
-    const petEnergy = getEnergyLevelName(pet.homeTypeId);
+    const petEnergy = getEnergyLevelName(pet.energyLevelId);
     const petHairType = getHairTypeName(pet.hairTypeId);
-
-    const petAge = pet.birthDate ? `${new Date().getFullYear() - new Date(pet.birthDate).getFullYear()} años` : 'N/A';
+    const petSpecie = getSpecieName(pet.specieId);
+    
+    const petAge = pet.birthDate 
+      ? `${new Date().getFullYear() - new Date(pet.birthDate).getFullYear()} años` 
+      : 'N/A';
 
     return (
       <BottomSheetScrollView contentContainerStyle={styles.scrollContainer}>
-        <TouchableOpacity 
-          activeOpacity={0.9} 
-          onPress={() => openImageViewer(0)}
-        >
+        <TouchableOpacity activeOpacity={0.9} onPress={() => openViewer(0)}>
           <Image
-            source={{ uri: pet.images[0]?.imageUrl }}
+            source={{ uri: pet.images[0]?.imageUrl || 'https://via.placeholder.com/500' }}
             style={styles.headerImage}
           />
         </TouchableOpacity>
 
         <View style={[styles.infoBox, { backgroundColor: backgroundColor }]}>
-          <View>
+          <View style={styles.infoTextContainer}>
             <Text style={[styles.name, { color: textColor }]}>{pet.name}</Text>
             <Text style={[styles.location, { color: textSecondaryColor }]}>
-              <Ionicons name="location-sharp" color={Colors.primary} size={16} /> {petCommune || 'Ubicación desconocida'}
+              <Ionicons name="location-sharp" color={Colors.primary} size={16} /> {petCommune}
             </Text>
           </View>
           <TouchableOpacity style={styles.likeButton}>
@@ -138,36 +110,30 @@ export function PetDetailSheet({
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textColor }]}>Sobre {pet.name}</Text>
-          <Text style={[styles.description, { color: textSecondaryColor }]}>{pet.description || pet.shortDescription}</Text>
+          <Text style={[styles.description, { color: textSecondaryColor }]}>
+            {pet.description || pet.shortDescription || 'Sin descripción.'}
+          </Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: textColor }]}>Galería</Text>
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={pet.images}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity onPress={() => openImageViewer(index)}>
-                <Image source={{ uri: item.imageUrl }} style={styles.carouselImage} />
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+        <PetImageCarousel 
+          images={pet.images} 
+          petName={pet.name} 
+          onImagePress={openViewer} 
+        />
 
         <View style={styles.section}>
           <View style={styles.bubblesContainer}>
-            <AttributeBubble icon="child" text={pet.isKidFriendly ? 'Amigable con niños' : 'No amigable con niños'} />
-            <AttributeBubble icon="dog" text={pet.isPetFriendly ? 'Amigable con mascotas' : 'No amigable con mascotas'} />
+            <AttributeBubble icon="child" text={pet.isKidFriendly ? 'Amigable niños' : 'No niños'} />
+            <AttributeBubble icon="dog" text={pet.isPetFriendly ? 'Amigable mascotas' : 'No mascotas'} />
             <AttributeBubble icon="notes-medical" text={pet.isSterilized ? 'Esterilizado' : 'No esterilizado'} />
-            <AttributeBubble icon="bolt" text={`${petEnergy}`} />
+            <AttributeBubble icon="bolt" text={petEnergy} />
           </View>
         </View>
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textColor }]}>Características</Text>
           <View>
+            <CharacteristicRow label="Especie" value={petSpecie} />
             <CharacteristicRow label="Edad (aprox)" value={petAge} />
             <CharacteristicRow label="Tamaño" value={petSize} />
             <CharacteristicRow label="Raza" value={petBreed} />
@@ -189,7 +155,7 @@ export function PetDetailSheet({
               <View>
                 <Text style={[styles.ownerName, { color: textColor }]}>{pet.owner.name}</Text>
                 <Text style={[styles.ownerRole, { color: textSecondaryColor }]}>
-                  {pet.owner.shortDescription || ''}
+                  {pet.owner.shortDescription || 'Protector de animales'}
                 </Text>
               </View>
             </View>
@@ -207,55 +173,23 @@ export function PetDetailSheet({
 
   return (
     <>
-    <BottomSheetModal
-      ref={bottomSheetRef}
-      index={0}
-      snapPoints={snapPoints}
-      onDismiss={onClose}
-      backgroundStyle={{ backgroundColor: backgroundColor }}
-      handleIndicatorStyle={{ backgroundColor: borderColor }}
-    >
-      {renderContent()}
-    </BottomSheetModal>
+      <BottomSheetModal
+        ref={bottomSheetRef}
+        index={0}
+        snapPoints={snapPoints}
+        onDismiss={onClose}
+        backgroundStyle={{ backgroundColor: backgroundColor }}
+        handleIndicatorStyle={{ backgroundColor: borderColor }}
+      >
+        {renderContent()}
+      </BottomSheetModal>
 
-    {pet && (
-        <Modal
-          visible={isViewerVisible}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setViewerVisible(false)}
-        >
-          <View style={styles.viewerModalContainer}>
-            <TouchableOpacity 
-              style={styles.viewerCloseButton} 
-              onPress={() => setViewerVisible(false)}
-            >
-              <Ionicons name="close" size={28} color="white" />
-            </TouchableOpacity>
-
-            <FlatList
-              data={pet.images}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item) => item.id.toString()}
-              initialScrollIndex={initialViewerIndex} 
-              getItemLayout={(data, index) => (
-                { length: width, offset: width * index, index }
-              )}
-              
-              renderItem={({ item }) => (
-                <View style={styles.viewerImageContainer}>
-                  <Image 
-                    source={{ uri: item.imageUrl }} 
-                    style={styles.viewerImage} 
-                  />
-                </View>
-              )}
-            />
-          </View>
-        </Modal>
-      )}
+      <PetImageViewer 
+        images={pet?.images} 
+        isVisible={isViewerVisible} 
+        initialIndex={initialIndex} 
+        onClose={closeViewer} 
+      />
     </>
   );
 }

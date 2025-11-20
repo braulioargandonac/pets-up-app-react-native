@@ -10,10 +10,10 @@ import { styles } from './LostScreen.styles';
 import Colors from '@/constants/Colors';
 import { LostPetCard } from '@/components/LostPetCard/LostPetCard';
 import { LostPetMapItem } from '@/types/lost-pet.types';
-import { MapPetCard } from './MapPetCard';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { LostPetDetailSheet } from './LostPetDetailSheet';
-import { LostPetMarker } from './LostPetMarker';
+import { MapPetCard } from '@/components/LostPetMap/MapPetCard';
+import { LostPetDetailSheet } from '@/components/LostPetDetail';
+import { LostPetMarker } from '@/components/LostPetMap/LostPetMarker';
 
 function getDistanceFromLatLonInKm(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371; // Radio de la tierra en km
@@ -164,7 +164,7 @@ export function LostScreen() {
         </TouchableOpacity>
       </View>
       {viewMode === 'map' ? renderMap() : renderList()}
-      <LostPetDetailSheet 
+      <LostPetDetailSheet
         lostPetId={detailId}
         bottomSheetRef={bottomSheetRef}
         onClose={handleCloseDetail}

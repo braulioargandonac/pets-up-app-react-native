@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Marker } from 'react-native-maps';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { LostPetMapItem } from '@/types/lost-pet.types';
-import { styles } from './LostScreen.styles';
+import { styles } from './LostPetMarker.styles';
 import Colors from '@/constants/Colors';
 
 interface Props {

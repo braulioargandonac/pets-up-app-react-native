@@ -25,6 +25,10 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  infoTextContainer: {
+    flex: 1,
+    paddingRight: 10,
+  },
   name: {
     fontSize: 24,
     fontWeight: 'bold',

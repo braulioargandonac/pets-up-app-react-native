@@ -11,7 +11,7 @@ import Animated, {
 import { View, TouchableOpacity } from 'react-native'; 
 
 import { PetSummary } from '@/types/pet.types';
-import { PetCard } from '@/components/PetCard/PetCard';
+import { PetCard } from '@/components/PetCard';
 import { styles } from './PetDeck.styles';
 import { scheduleOnRN } from 'react-native-worklets';
 

@@ -1,10 +1,14 @@
 import axios from 'axios';
 import { getToken } from './tokenService';
 
-const YOUR_MAC_IP_ADDRESS = '192.168.1.181'; 
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+if (!API_URL) {
+  console.warn('EXPO_PUBLIC_API_URL no está definida en el archivo .env');
+}
 
 const api = axios.create({
-  baseURL: `http://${YOUR_MAC_IP_ADDRESS}:3000/api/v1`,
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
