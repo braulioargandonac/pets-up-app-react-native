@@ -1,36 +1,28 @@
 import { useState, useCallback } from 'react';
-import api from '@/services/api';
+import { useQuery } from './useApi';
 import { PetDetail } from '@/types/pet.types';
+import { API_ROUTES } from '@/constants/ApiRoutes';
 
 export function usePetDetail() {
-  const [pet, setPet] = useState<PetDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [petId, setPetId] = useState<number | null>(null);
 
-  const fetchPetDetail = useCallback(async (id: number) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await api.get<PetDetail>(`/pets/${id}`);
-      
-      setPet(response.data);
-      
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(new Error('Ocurrió un error desconocido.'));
-      }
-      setPet(null);
-    } finally {
-      setIsLoading(false);
-    }
+  const { 
+    data: pet, 
+    isLoading, 
+    error, 
+    refetch 
+  } = useQuery<PetDetail>(
+    petId ? API_ROUTES.PETS.BY_ID(petId) : '', 
+    { enabled: !!petId }
+  );
+
+  const fetchPetDetail = useCallback((id: number) => {
+    setPetId(id);
   }, []);
 
   const clearPetDetail = useCallback(() => {
-    setPet(null);
-    setError(null);
+    setPetId(null);
   }, []);
 
-  return { pet, isLoading, error, fetchPetDetail, clearPetDetail };
+  return { pet, isLoading, error, fetchPetDetail, clearPetDetail, refetch };
 }

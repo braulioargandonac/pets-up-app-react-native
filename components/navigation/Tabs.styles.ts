@@ -3,6 +3,10 @@ import Colors from '../../constants/Colors';
 
 export const styles = StyleSheet.create({
   tabBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: Colors.primary,
     height: 90,
     borderTopWidth: 0,

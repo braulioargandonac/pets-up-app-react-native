@@ -69,6 +69,7 @@ export default function AdoptScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: 100,
   },
   centered: {
     flex: 1,

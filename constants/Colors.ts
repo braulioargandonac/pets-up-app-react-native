@@ -1,25 +1,31 @@
-// constants/Colors.ts
-
 const tintColor = '#9d87df';
 const lightGray = '#999';
-const white = '#FFFFFF';
+const white = '#ffffffff';
+const backgroundLight = "#f8f8f8"
 const black = '#000000';
+const mint = '#61C9A8';
+const peach = '#ffb38dff';
+const brown = '#66635b'
 
 const colors = {
   primary: tintColor,
+  peach: peach,
+  mint: mint,
+  brown: brown,
   
-  // Colores Funcionales (para confirmar, cancelar, etc.)
-  success: '#34C759', // Verde iOS (Confirmar)
-  danger: '#FF3B30',  // Rojo iOS (Cancelar / Error / Eliminar)
-  warning: '#FF9500', // Naranja iOS (Advertencia)
+  // Colores Funcionales
+  success: '#34C759',
+  danger: '#FF3B30',
+  warning: '#FF9500',
 
-  // Escala de Grises (Neutrales)
-  grey100: '#F4F4F5', // Fondo muy claro (para cards)
-  grey200: '#E4E4E7', // Bordes / Divisores
-  grey300: '#A1A1AA', // Texto inactivo / placeholders
-  grey400: '#71717A', // Texto secundario
-  grey500: '#27272A', // Texto principal
+  // Escala de Grises
+  grey100: '#F4F4F5',
+  grey200: '#E4E4E7',
+  grey300: '#A1A1AA',
+  grey400: '#71717A',
+  grey500: '#27272A',
 
+  backgroundLight: backgroundLight,
   white: white,
   black: black,
 };
@@ -29,7 +35,7 @@ export default {
   light: {
     text: colors.grey500,
     textSecondary: colors.grey400,
-    background: colors.white,
+    background: colors.backgroundLight,
     backgroundMuted: colors.grey100,
     tint: colors.primary,
     tabIconDefault: colors.grey300,
@@ -53,6 +59,12 @@ export default {
     success: colors.success,
     danger: colors.danger,
     warning: colors.warning,
+  },
+
+  extras: {
+    mint: colors.mint,
+    peach: colors.peach,
+    brown: colors.brown,
   },
   
   primary: colors.primary,
