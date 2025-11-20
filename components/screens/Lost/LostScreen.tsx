@@ -11,7 +11,8 @@ import Colors from '@/constants/Colors';
 import { LostPetCard } from '@/components/LostPetCard/LostPetCard';
 import { LostPetMapItem } from '@/types/lost-pet.types';
 import { MapPetCard } from './MapPetCard';
-
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { LostPetDetailSheet } from './LostPetDetailSheet';
 import { LostPetMarker } from './LostPetMarker';
 
 function getDistanceFromLatLonInKm(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -35,26 +36,40 @@ export function LostScreen() {
   const { lostPets: listData, isLoading: loadingList, loadMore, refresh } = useLostPets();
 
   const backgroundColor = useThemeColor({}, 'background');
+  const mutedBackgroundColor = useThemeColor({}, 'backgroundMuted');
+  const textColor = useThemeColor({}, 'text');
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [selectedPet, setSelectedPet] = useState<LostPetMapItem | null>(null);
 
   const debounceRef = useRef<any>(null);
   const lastFetchLocation = useRef<{ lat: number; lon: number } | null>(null);
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const [detailId, setDetailId] = useState<number | null>(null);
 
   const handleToggleView = () => {
     setViewMode(prev => prev === 'map' ? 'list' : 'map');
   };
 
   const handleMarkerPress = useCallback((pet: LostPetMapItem) => {
-      setSelectedPet(pet);
-    }, []);
+    setSelectedPet(pet);
+  }, []);
 
   const handleCloseCard = () => {
     setSelectedPet(null);
   };
 
   const handlePetPress = useCallback((id: number) => {
-    console.log('Ir al detalle de:', id);
+    setDetailId(id);
+    bottomSheetRef.current?.present();
+  }, []);
+
+  const handleCloseDetail = useCallback(() => {
+    setDetailId(null);
+    bottomSheetRef.current?.dismiss();
+  }, []);
+
+  const handleReportSighting = useCallback((id: number) => {
+    console.log("Reportar avistamiento para ID:", id);
   }, []);
 
   const handleRegionChange = (region: Region) => {
@@ -140,15 +155,21 @@ export function LostScreen() {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.toggleButton} onPress={handleToggleView}>
+        <TouchableOpacity style={[styles.toggleButton, { backgroundColor: mutedBackgroundColor }]} onPress={handleToggleView}>
           <Ionicons name={viewMode === 'map' ? 'list' : 'map'} size={20} color={Colors.primary} />
-          <Text style={styles.toggleText}>{viewMode === 'map' ? 'Ver Lista' : 'Ver Mapa'}</Text>
+          <Text style={[styles.toggleText, { color: textColor }]}>{viewMode === 'map' ? 'Ver Lista' : 'Ver Mapa'}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.reportButton}>
           <Ionicons name="add" size={28} color={Colors.white} />
         </TouchableOpacity>
       </View>
       {viewMode === 'map' ? renderMap() : renderList()}
+      <LostPetDetailSheet 
+        lostPetId={detailId}
+        bottomSheetRef={bottomSheetRef}
+        onClose={handleCloseDetail}
+        onReportPress={handleReportSighting}
+      />
     </View>
   );
 }

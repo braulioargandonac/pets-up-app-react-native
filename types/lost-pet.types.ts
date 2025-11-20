@@ -1,4 +1,4 @@
-import { PetSummary } from './pet.types';
+import { PetDetail } from './pet.types';
 import { Commune } from './api.types';
 
 export interface LostPet {
@@ -14,7 +14,7 @@ export interface LostPet {
   description?: string | null;
   isResolved: boolean;
   
-  pet: PetSummary;
+  pet: PetDetail;
   commune: Commune | null;
 }
 

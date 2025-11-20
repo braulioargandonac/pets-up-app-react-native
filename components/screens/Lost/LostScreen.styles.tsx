@@ -19,7 +19,6 @@ export const styles = StyleSheet.create({
     gap: 8,
   },
   toggleButton: {
-    backgroundColor: Colors.white,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
@@ -31,7 +30,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  toggleText: { fontWeight: 'bold', color: Colors.primary, marginLeft: 8 },
+  toggleText: { fontWeight: 'bold', marginLeft: 8 },
   reportButton: {
     backgroundColor: Colors.primary,
     width: 44,
