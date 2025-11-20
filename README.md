@@ -1,50 +1,119 @@
-# Welcome to your Expo app 👋
+# Pets Üp\! - Aplicación Móvil
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Sitio Web Oficial:** [**https://www.petsup.cl**](https://www.petsup.cl)
 
-## Get started
+[](https://expo.dev/)
+[](https://reactnative.dev/)
+[](https://www.typescriptlang.org/)
 
-1. Install dependencies
+Esta es la aplicación móvil oficial de **Pets Üp\!**, una plataforma para la adopción, búsqueda de mascotas perdidas y cuidado comunitario.
 
-   ```bash
-   npm install
-   ```
+La aplicación está construida con **React Native** utilizando el ecosistema de **Expo** y **Expo Router**, enfocada en el rendimiento y la escalabilidad.
 
-2. Start the app
+-----
 
-   ```bash
-   npx expo start
-   ```
+## 🛠️ Stack Tecnológico
 
-In the output, you'll find options to open the app in a
+  * **Framework:** [Expo](https://expo.dev/) (Managed Workflow).
+  * **Lenguaje:** TypeScript.
+  * **Navegación:** [Expo Router](https://docs.expo.dev/router/introduction/) (File-based routing).
+  * **Estado Global:** React Context API (`AuthContext`, `CatalogContext`).
+  * **Manejo de Datos:** Custom Hooks (`usePets`, `useLostPets`) con Axios e Interceptores.
+  * **Mapas:** `react-native-maps` (Google Maps / Apple Maps).
+  * **UI & Animaciones:**
+      * `react-native-reanimated` (Animaciones a 60fps en hilo nativo).
+      * `react-native-gesture-handler` (Gestos nativos).
+      * `@gorhom/bottom-sheet` (Paneles deslizables de alto rendimiento).
+  * **Almacenamiento Seguro:** `expo-secure-store` (para JWT).
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+-----
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🏛️ Arquitectura y Patrones
 
-## Get a fresh project
+El proyecto sigue principios estrictos de ingeniería de software para asegurar la mantenibilidad:
 
-When you're ready, run:
+1.  **Co-ubicación (Co-location):** Los estilos (`.styles.ts`) y la lógica viven junto a sus componentes, no en carpetas separadas globales.
+2.  **SRP (Single Responsibility Principle):**
+      * **Pantallas (`app/`):** Solo definen rutas y layouts.
+      * **Componentes (`components/screens/`):** Contienen la UI y la lógica de presentación.
+      * **Hooks (`hooks/`):** Encapsulan la lógica de negocio y llamadas a la API.
+3.  **Patrón Fachada en Hooks:** Los componentes no llaman a `axios` directamente. Usan hooks específicos (ej. `useLostPets`) que abstraen la configuración, paginación y manejo de errores.
+4.  **Type Safety:** Tipado estricto de TypeScript para todas las respuestas de la API y props de componentes.
+5.  **Theming:** Soporte nativo para Modo Oscuro y Claro mediante `useThemeColor`.
 
-```bash
-npm run reset-project
+-----
+
+## 📂 Estructura del Proyecto
+
+```text
+petsup-frontend/
+├── app/                  # Rutas de Expo Router (File-based navigation)
+│   ├── (auth)/           # Stack de Autenticación (Login, Registro)
+│   ├── (tabs)/           # Stack Principal (Tabs de navegación)
+│   └── _layout.tsx       # Layout raíz con Proveedores (Auth, Theme, Gestures)
+├── components/           # Componentes de UI
+│   ├── PetCard/          # Componente tarjeta (UI + Styles)
+│   ├── PetDeck/          # Componente mazo swipeable (Lógica + UI)
+│   ├── PetDetail/        # BottomSheet de detalle
+│   └── screens/          # Pantallas completas (lógica separada de rutas)
+├── constants/            # Tokens de diseño (Colors.ts, ApiRoutes.ts)
+├── context/              # Estado Global (AuthContext, CatalogContext)
+├── hooks/                # Lógica de Negocio (usePets, useApi, useLostPetsMap)
+├── services/             # Configuración de Axios y SecureStore
+└── types/                # Definiciones de Tipos (Interfaces)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+-----
 
-## Learn more
+## 🚀 Instalación y Ejecución
 
-To learn more about developing your project with Expo, look at the following resources:
+### Prerrequisitos
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+  * Node.js (LTS recomendado).
+  * Dispositivo físico (con app **Expo Go**) o Simulador (iOS/Android).
+  * Backend de Pets Üp\! corriendo localmente.
 
-## Join the community
+### 1\. Clonar e Instalar
 
-Join our community of developers creating universal apps.
+```bash
+git clone <url-del-repo>
+cd petsup-frontend
+npm install
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 2\. Configurar API (Importante para entorno local)
+
+Debido a que Expo corre en tu teléfono y el backend en tu PC, no puedes usar `localhost`.
+
+1.  Abre el archivo `services/api.ts`.
+2.  Busca la constante `YOUR_MAC_IP_ADDRESS`.
+3.  Reemplázala con la IP local de tu computadora (ej. `192.168.x.x`).
+      * *Mac/Linux:* Ejecuta `ipconfig getifaddr en0` en la terminal.
+      * *Windows:* Ejecuta `ipconfig`.
+
+### 3\. Ejecutar la App
+
+```bash
+npx expo start
+```
+
+  * Escanea el código QR con la app **Expo Go** (Android) o la Cámara (iOS).
+  * Para limpiar caché (si algo falla): `npx expo start -c`.
+
+-----
+
+## ✨ Funcionalidades Clave (MVP)
+
+  * **Autenticación:**
+      * Login y Registro (Wizard de pasos).
+      * Sesión persistente con JWT seguro.
+      * Guardia de rutas (Redirección automática).
+  * **Adopción (Tinder-style):**
+      * Feed de mascotas con gestos de Swipe.
+      * Detalle de mascota en Bottom Sheet.
+  * **Mascotas Perdidas (Geoespacial):**
+      * Mapa interactivo con marcadores optimizados.
+      * Carga de datos basada en ubicación y zoom.
+      * Switch entre vista de Mapa y Lista.
+  * **Catálogos:**
+      * Carga inicial optimizada de datos estáticos (Razas, Comunas, etc.) para traducción instantánea de IDs.
