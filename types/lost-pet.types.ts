@@ -13,7 +13,7 @@ export interface LostPet {
   lostAt: string;
   description?: string | null;
   isResolved: boolean;
-  
+
   pet: PetDetail;
   commune: Commune | null;
 }
@@ -34,15 +34,15 @@ export interface LostPetMapItem {
   petId: number;
   reportedById: number;
   communeId: number;
-  
+
   latitude: number;
   longitude: number;
   distanceInMeters: number;
-  
+
   petName: string;
   petSpecieId: number;
   petImage: string | null;
-  
+
   lostAt: string;
   description: string | null;
   isResolved: boolean;

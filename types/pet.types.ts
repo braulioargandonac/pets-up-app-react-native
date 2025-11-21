@@ -37,7 +37,7 @@ export interface PetDetail {
   name: string;
   communeId: number | null;
   isActive: boolean;
-  
+
   description?: string | null;
   shortDescription?: string | null;
   birthDate?: string | null;
