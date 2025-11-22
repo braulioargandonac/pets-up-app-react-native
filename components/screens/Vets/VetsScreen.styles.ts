@@ -109,10 +109,8 @@ export const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         elevation: 4,
     },
-
     calloutContainer: {
         width: 200,
-        backgroundColor: 'white',
         borderRadius: 12,
         padding: 10,
     },

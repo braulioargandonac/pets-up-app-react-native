@@ -1,17 +1,24 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, ActivityIndicator, Platform, ActionSheetIOS, Alert, Linking, Switch } from 'react-native';
+import { View, Text, ActivityIndicator, Platform, Switch } from 'react-native';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE, PROVIDER_DEFAULT, Region } from 'react-native-maps';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 
 import { useVetsMap } from '@/hooks/useVetsMap';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { styles } from './VetsScreen.styles';
 import Colors from '@/constants/Colors';
 import { VetMapItem } from '@/types/vet.types';
+import { VetDetailSheet } from '@/components/VetDetail';
 
 export function VetsScreen() {
     const { vets, userLocation, searchVets, permissionGranted } = useVetsMap();
+    const [selectedVet, setSelectedVet] = useState<VetMapItem | null>(null);
+    const bottomSheetRef = useRef<BottomSheetModal>(null);
     const backgroundColor = useThemeColor({}, 'background');
+    const mutedBackgroundColor = useThemeColor({}, 'backgroundMuted');
+    const textColor = useThemeColor({}, 'text');
+    const textSecondary = useThemeColor({}, 'textSecondary');
 
     const [filterOpenNow, setFilterOpenNow] = useState(false);
     const debounceRef = useRef<any>(null);
@@ -39,56 +46,14 @@ export function VetsScreen() {
         }
     };
 
-    const openMapApp = (url: string) => {
-        Linking.canOpenURL(url).then((supported) => {
-            if (supported) Linking.openURL(url);
-            else Alert.alert('Error', 'No se pudo abrir la aplicación de mapas.');
-        });
+    const handleCalloutPress = (vet: VetMapItem) => {
+        setSelectedVet(vet);
+        bottomSheetRef.current?.present();
     };
 
-    const handleCalloutPress = (vet: VetMapItem) => {
-        const lat = vet.latitude;
-        const lon = vet.longitude;
-        const label = encodeURIComponent(vet.name);
-
-        const options = [
-            { text: 'Cancelar', style: 'cancel', onPress: () => { } },
-            {
-                text: 'Google Maps',
-                onPress: () => openMapApp(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`)
-            },
-            {
-                text: 'Waze',
-                onPress: () => openMapApp(`https://waze.com/ul?ll=${lat},${lon}&navigate=yes`)
-            },
-            ...(Platform.OS === 'ios' ? [{
-                text: 'Apple Maps',
-                onPress: () => openMapApp(`http://maps.apple.com/?q=${label}&ll=${lat},${lon}`)
-            }] : [])
-        ];
-
-        if (Platform.OS === 'ios') {
-            ActionSheetIOS.showActionSheetWithOptions(
-                {
-                    options: options.map(o => o.text),
-                    cancelButtonIndex: 0,
-                    title: '¿Cómo quieres llegar?',
-                },
-                (buttonIndex) => {
-                    options[buttonIndex]?.onPress();
-                }
-            );
-        } else {
-            Alert.alert(
-                '¿Cómo quieres llegar?',
-                'Elige una aplicación:',
-                [
-                    { text: 'Cancelar', style: 'cancel' },
-                    { text: 'Waze', onPress: () => openMapApp(`https://waze.com/ul?ll=${lat},${lon}&navigate=yes`) },
-                    { text: 'Google Maps', onPress: () => openMapApp(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`) },
-                ]
-            );
-        }
+    const handleCloseSheet = () => {
+        setSelectedVet(null);
+        bottomSheetRef.current?.dismiss();
     };
 
     if (!permissionGranted && !userLocation) {
@@ -113,9 +78,9 @@ export function VetsScreen() {
                 <View style={[styles.switchContainer, { backgroundColor: Colors.primary }]}>
                     <Text style={[styles.switchLabel, { color: Colors.white }]}>Solo Abiertos</Text>
                     <Switch
-                        trackColor={{ false: Colors.extras.peach, true: Colors.extras.mint }}
+                        trackColor={{ false: "#f8f8f8", true: Colors.extras.mint }}
                         thumbColor={Colors.white}
-                        ios_backgroundColor={Colors.extras.peach}
+                        ios_backgroundColor={"#f8f8f8"}
                         onValueChange={toggleOpenNow}
                         value={filterOpenNow}
                         style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
@@ -155,9 +120,9 @@ export function VetsScreen() {
                             </View>
 
                             <Callout tooltip onPress={() => handleCalloutPress(vet)}>
-                                <View style={styles.calloutContainer}>
-                                    <Text style={styles.calloutTitle}>{vet.name}</Text>
-                                    <Text style={styles.calloutAddress} numberOfLines={2}>{vet.address}</Text>
+                                <View style={[styles.calloutContainer, { backgroundColor: mutedBackgroundColor }]}>
+                                    <Text style={[styles.calloutTitle, { color: textColor }]}>{vet.name}</Text>
+                                    <Text style={[styles.calloutAddress, { color: textSecondary }]} numberOfLines={2}>{vet.address}</Text>
 
                                     {vet.isVerified && (
                                         <View style={styles.verifiedBadge}>
@@ -166,7 +131,7 @@ export function VetsScreen() {
                                         </View>
                                     )}
                                     <View style={{ marginTop: 8, backgroundColor: Colors.primary, padding: 6, borderRadius: 4, alignItems: 'center' }}>
-                                        <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>Cómo llegar ➔</Text>
+                                        <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>Ver Detalles</Text>
                                     </View>
                                 </View>
                             </Callout>
@@ -174,6 +139,12 @@ export function VetsScreen() {
                     )
                 })}
             </MapView>
+            <VetDetailSheet
+                vetId={selectedVet?.id || null}
+                location={selectedVet ? { lat: selectedVet.latitude, lon: selectedVet.longitude } : null}
+                bottomSheetRef={bottomSheetRef}
+                onClose={handleCloseSheet}
+            />
         </View>
     );
 }
