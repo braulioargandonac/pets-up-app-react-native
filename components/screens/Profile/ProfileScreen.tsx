@@ -8,7 +8,7 @@ import { styles } from './ProfileScreen.styles';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { PetDetailSheet } from '@/components/PetDetail/PetDetailSheet';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import Animated, {
     useSharedValue,
     useAnimatedScrollHandler,
@@ -22,6 +22,7 @@ const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground
 const HEADER_HEIGHT = 280;
 
 export function ProfileScreen() {
+    const router = useRouter();
     const { user, logout, deleteAccount } = useAuth();
     const { getCommuneName } = useCatalog();
     const { myPets, isLoading: loadingPets } = useMyPets();
@@ -155,11 +156,17 @@ export function ProfileScreen() {
                         <Text style={[styles.userName, { color: textColor }]}>
                             {user.name || 'Usuario'}
                         </Text>
-                        <TouchableOpacity onPress={() => console.log('Ir a editar perfil')}>
+                        <TouchableOpacity onPress={() => router.push('/profile/edit')}>
                             <Text style={{ color: Colors.primary, fontWeight: '600', marginBottom: 4 }}>
                                 Editar Perfil
                             </Text>
                         </TouchableOpacity>
+
+                        {user.shortDescription && (
+                          <Text style={{ color: textSecondary, fontSize: 14, marginBottom: 10, textAlign: 'center', paddingHorizontal: 20 }}>
+                            {user.shortDescription}
+                          </Text>
+                        )}
                     </View>
 
                     <Text style={[styles.userLocation, { color: textSecondary }]}>
@@ -176,6 +183,15 @@ export function ProfileScreen() {
                             <Text style={[styles.statLabel, { color: textSecondary }]}>Reportes</Text>
                         </View>
                     </View>
+
+                    {user.description && (
+                      <View style={{ marginBottom: 20 }}>
+                        <Text style={[styles.sectionTitle, { color: textColor }]}>Sobre mí</Text>
+                        <Text style={{ color: textSecondary, fontSize: 16, lineHeight: 24 }}>
+                          {user.description}
+                        </Text>
+                      </View>
+                    )}
 
                     <Text style={[styles.sectionTitle, { color: textColor }]}>Mis Mascotas</Text>
 

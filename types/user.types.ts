@@ -11,6 +11,7 @@ export interface User {
   address?: string | null;
   communeId: number;
   shortDescription?: string | null;
+  description?: string | null;
   reportCount?: number | null;
   userRoles: {
     role: Role;

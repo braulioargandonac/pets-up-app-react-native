@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import * as tokenService from '../services/tokenService';
 import { User } from '../types/user.types';
@@ -11,6 +11,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   deleteAccount: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -38,6 +39,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsLoading(false);
     }
     loadUserFromToken();
+  }, []);
+
+  const refreshUser = useCallback(async () => {
+    try {
+      const response = await api.get<User>(API_ROUTES.USERS.ME);
+      setUser(response.data);
+    } catch (error) {
+      console.error('Error refrescando usuario:', error);
+    }
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -82,6 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         login,
         logout,
         deleteAccount,
+        refreshUser,
         isLoading,
       }}
     >
