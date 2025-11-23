@@ -178,4 +178,32 @@ export const styles = StyleSheet.create({
     height: '80%',
     resizeMode: 'contain',
   },
+
+  actionsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    paddingTop: 30,
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  actionButton: {
+    flex: 1,
+    height: 56,
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  actionButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.white,
+    marginLeft: 8,
+  },
 });

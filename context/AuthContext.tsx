@@ -3,12 +3,14 @@ import api from '../services/api';
 import * as tokenService from '../services/tokenService';
 import { User } from '../types/user.types';
 import { AuthResponse } from '../types/auth.types';
+import { API_ROUTES } from '@/constants/ApiRoutes';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  deleteAccount: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -26,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (token) {
         try {
           api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          const response = await api.get<User>('/users/me'); 
+          const response = await api.get<User>(API_ROUTES.USERS.ME);
           setUser(response.data);
         } catch (error) {
           console.log('Token inválido, borrando...', error);
@@ -40,11 +42,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await api.post<AuthResponse>('/auth/login', {
+      const response = await api.post<AuthResponse>(API_ROUTES.AUTH.LOGIN, {
         email,
         password,
       });
-      
+
       const { accessToken, user } = response.data;
 
       await tokenService.saveToken(accessToken);
@@ -63,6 +65,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(null);
   };
 
+  const deleteAccount = async () => {
+    try {
+      await api.delete(API_ROUTES.USERS.ME);
+      await logout();
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -70,6 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         user,
         login,
         logout,
+        deleteAccount,
         isLoading,
       }}
     >

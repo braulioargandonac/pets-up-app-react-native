@@ -1,24 +1,31 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { styles } from '@/components/navigation/Tabs.styles';
 
 function TabBarItem(props: {
-  name: React.ComponentProps<typeof FontAwesome5>['name'];
+  name: any;
   label: string;
   color: string;
   focused: boolean;
   isIonicons?: boolean;
+  isMaterial?: boolean;
 }) {
-  const { name, label, color, focused, isIonicons } = props;
-  const IconComponent = isIonicons ? Ionicons : FontAwesome5;
-  
+  const { name, label, color, focused, isIonicons, isMaterial } = props;
+
+  let IconComponent: any = FontAwesome5;
+  if (isMaterial) {
+    IconComponent = MaterialCommunityIcons;
+  } else if (isIonicons) {
+    IconComponent = Ionicons;
+  }
+
   if (focused) {
     return (
       <View style={styles.tabIconRaised}>
-        <IconComponent name={name as any} size={24} color={Colors.white} />
+        <IconComponent name={name} size={24} color={Colors.white} />
         <Text style={[styles.tabLabelInactive, { color: Colors.white }]}>
           {label}
         </Text>
@@ -28,7 +35,7 @@ function TabBarItem(props: {
 
   return (
     <View style={styles.tabItemContainer}>
-      <IconComponent name={name as any} size={24} color={color} />
+      <IconComponent name={name} size={24} color={color} />
       <Text style={[styles.tabLabelInactive, { color: color }]}>
         {label}
       </Text>
@@ -47,7 +54,7 @@ export default function TabLayout() {
         tabBarShowLabel: false,
         headerShown: false,
       }}>
-      
+
       <Tabs.Screen
         name="lost"
         options={{
@@ -84,7 +91,8 @@ export default function TabLayout() {
               focused={focused}
               color={color}
               label="Adoptar"
-              name="heart"
+              name="heart-circle"
+              isMaterial
             />
           ),
         }}
@@ -106,15 +114,15 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="scan"
+        name="profile"
         options={{
           tabBarIcon: ({ color, focused }) => (
             <TabBarItem
               focused={focused}
               color={color}
-              label="Encontrar"
-              name="qr-code"
-              isIonicons
+              label="Perfil"
+              name="account-circle"
+              isMaterial
             />
           ),
         }}

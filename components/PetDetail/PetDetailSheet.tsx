@@ -18,20 +18,28 @@ import { AttributeBubble, CharacteristicRow } from './ui/PetAttributes';
 import { PetImageCarousel } from './ui/PetImageCarousel';
 import { PetImageViewer } from './ui/PetImageViewer';
 
-interface PetDetailSheetProps {
+interface Props {
   petId: number | null;
+  location?: { lat: number; lon: number } | null;
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
   onClose: () => void;
+  mode?: 'adopt' | 'owner';
+  onEditPress?: (id: number) => void;
+  onReportLostPress?: (id: number) => void;
 }
 
 export function PetDetailSheet({
   petId,
+  location,
   bottomSheetRef,
   onClose,
-}: PetDetailSheetProps) {
+  mode = 'adopt',
+  onEditPress,
+  onReportLostPress
+}: Props) {
   const { pet, isLoading, error, fetchPetDetail, clearPetDetail } = usePetDetail();
   const { isViewerVisible, initialIndex, openViewer, closeViewer } = useImageViewer();
-  
+
   const {
     getCommuneName,
     getBreedName,
@@ -82,9 +90,9 @@ export function PetDetailSheet({
     const petEnergy = getEnergyLevelName(pet.energyLevelId);
     const petHairType = getHairTypeName(pet.hairTypeId);
     const petSpecie = getSpecieName(pet.specieId);
-    
-    const petAge = pet.birthDate 
-      ? `${new Date().getFullYear() - new Date(pet.birthDate).getFullYear()} años` 
+
+    const petAge = pet.birthDate
+      ? `${new Date().getFullYear() - new Date(pet.birthDate).getFullYear()} años`
       : 'N/A';
 
     return (
@@ -115,10 +123,10 @@ export function PetDetailSheet({
           </Text>
         </View>
 
-        <PetImageCarousel 
-          images={pet.images} 
-          petName={pet.name} 
-          onImagePress={openViewer} 
+        <PetImageCarousel
+          images={pet.images}
+          petName={pet.name}
+          onImagePress={openViewer}
         />
 
         <View style={styles.section}>
@@ -144,7 +152,7 @@ export function PetDetailSheet({
           </View>
         </View>
 
-        {pet.owner && (
+        {mode === 'adopt' && pet.owner && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: textColor }]}>Rescatista</Text>
             <View style={[styles.ownerBox, { backgroundColor: mutedBackgroundColor }]}>
@@ -162,11 +170,29 @@ export function PetDetailSheet({
           </View>
         )}
 
-        <TouchableOpacity style={styles.adoptButton}>
-          <FontAwesome5 name="paw" size={20} color={Colors.white} />
-          <Text style={styles.adoptButtonText}>Adoptar</Text>
-        </TouchableOpacity>
-
+        {mode === 'adopt' ? (
+          <TouchableOpacity style={styles.adoptButton}>
+            <FontAwesome5 name="paw" size={20} color={Colors.white} />
+            <Text style={styles.adoptButtonText}>Adoptar</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.actionsContainer}>
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: Colors.extras.mint, borderWidth: 1, borderColor: borderColor }]}
+              onPress={() => onEditPress?.(pet.id)}
+            >
+              <FontAwesome5 name="edit" size={20} color={textColor} />
+              <Text style={[styles.actionButtonText, { color: textColor }]}>Editar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: Colors.extras.peach, marginLeft: 10 }]}
+              onPress={() => onReportLostPress?.(pet.id)}
+            >
+              <FontAwesome5 name="exclamation-triangle" size={20} color={Colors.white} />
+              <Text style={styles.actionButtonText}>Perdido</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </BottomSheetScrollView>
     );
   };
@@ -184,11 +210,11 @@ export function PetDetailSheet({
         {renderContent()}
       </BottomSheetModal>
 
-      <PetImageViewer 
-        images={pet?.images} 
-        isVisible={isViewerVisible} 
-        initialIndex={initialIndex} 
-        onClose={closeViewer} 
+      <PetImageViewer
+        images={pet?.images}
+        isVisible={isViewerVisible}
+        initialIndex={initialIndex}
+        onClose={closeViewer}
       />
     </>
   );

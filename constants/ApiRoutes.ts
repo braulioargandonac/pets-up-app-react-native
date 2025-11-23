@@ -43,5 +43,6 @@ export const API_ROUTES = {
   },
   USERS: {
     ME: '/users/me',
+    PETS: '/users/me/pets'
   },
 };
