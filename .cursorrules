@@ -1,0 +1,35 @@
+# PetsUp Frontend - Cursor Rules
+
+## Tech Stack
+- **Framework:** React Native (Expo Managed)
+- **Navigation:** Expo Router (`app/` directory)
+- **State:** React Context API
+- **UI:** StyleSheet, Reanimated, Gorhom BottomSheet
+
+## TypeScript & General Guidelines
+- **Language:** Use English for code.
+- **Typing:** Define interfaces for all Props. Avoid `any`. Use `as const` for literals.
+- **Components:**
+  - One component per file (usually).
+  - Use Functional Components with Named Exports.
+- **Immutability:** Prefer spreading objects `...state` over mutation.
+
+## React Native Best Practices
+- **Performance:** Use `useCallback` and `useMemo` for expensive calculations or list render items.
+- **Styling:** Use the `Colors` constant. Do not hardcode hex values. Use `StyleSheet.create`.
+- **Navigation:** Use `useRouter` from `expo-router`.
+- **API:** Use custom hooks (`useApi`, `useMutation`) for all network requests.
+
+## Specific Context
+- **Parallax:** `ProfileScreen` uses `Animated.ScrollView` + `interpolate`.
+- **Sheet Modal:** `PetDetailSheet` handles both "Adopt" and "Owner" modes.
+- **Layout:** Use `SafeAreaView` or `KeyboardAvoidingView` appropriately.
+
+## Testing Strategy (MANDATORY)
+- **Zero Tech Debt:** No component is complete without a test (`__tests__/*.test.tsx`).
+- **Philosophy:** Test behavior (what the user sees/clicks), not implementation details.
+- **Scope:** Unit tests for Hooks and Components. Integration tests for critical flows.
+
+## Tone
+- Concise. Prioritize functional patterns.
+- **Always generate the test file alongside the component.**
