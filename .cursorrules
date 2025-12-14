@@ -30,6 +30,17 @@
 - **Philosophy:** Test behavior (what the user sees/clicks), not implementation details.
 - **Scope:** Unit tests for Hooks and Components. Integration tests for critical flows.
 
+## Documentation & Context Awareness
+**CRITICAL:** Before answering or generating code, you MUST review the context in `docs/` to ensure alignment:
+
+1.  **Architecture:** Read `docs/architecture.md` to understand where files belong and how data flows. Do not invent new architectural patterns.
+2.  **Conventions:** Read `docs/conventions.md` to follow naming rules, error handling, and **Testing Standards**.
+3.  **Current Focus:** Read `docs/active_task.md` to understand strictly what is being built right now. Do not implement features outside this scope.
+
+**Workflow:**
+- If the user asks for a new feature, ask them to update `docs/active_task.md` first if it's not clear.
+- When a task is finished, suggest updating the checkbox in `docs/active_task.md`.
+
 ## Tone
 - Concise. Prioritize functional patterns.
 - **Always generate the test file alongside the component.**
